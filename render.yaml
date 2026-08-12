@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: atif-jobs
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ADZUNA_APP_ID
+        value: f187ad33
+      - key: ADZUNA_APP_KEY
+        value: 5593494ef085c98743a0d01ed3156166
+      - key: REFRESH_INTERVAL_MINUTES
+        value: "30"
+      - key: PORT
+        value: "8000"
