@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AtifJobs — ECE Job Board</title>
+  <meta name="description" content="Personal ECE job board for Mohammed Atif. Embedded systems, firmware, IoT, robotics jobs from across India and remote — scored by resume match." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-name">AtifJobs</div>
+        <div class="brand-sub">ECE Job Board · Mohammed Atif</div>
+      </div>
+    </div>
+
+    <div class="header-stats" id="headerStats">
+      <div class="stat-pill" id="totalPill">
+        <span class="stat-num" id="statTotal">—</span>
+        <span class="stat-label">jobs</span>
+      </div>
+      <div class="stat-pill high">
+        <span class="stat-num" id="statHigh">—</span>
+        <span class="stat-label">high match</span>
+      </div>
+      <div class="live-badge" id="liveBadge">
+        <span class="live-dot"></span>
+        <span id="liveText">Loading…</span>
+      </div>
+    </div>
+
+    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Refresh
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🎯 Personalized for your resume</div>
+    <h1 class="hero-title">Your ECE Jobs,<br/><span class="gradient-text">All in One Place</span></h1>
+    <p class="hero-desc">Embedded · Firmware · IoT · Robotics · VLSI · Hardware · Defence<br/>Aggregated from across India & Remote — scored against your skills</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ FILTERS ═══════════════════════════ -->
+<div class="filters-bar" id="filtersBar">
+  <div class="filters-inner">
+
+    <!-- Category tabs -->
+    <div class="filter-group">
+      <div class="filter-tabs" id="categoryTabs">
+        <button class="tab active" data-cat="All" onclick="setCategory(this)">All</button>
+        <button class="tab" data-cat="Firmware" onclick="setCategory(this)">⚙️ Firmware</button>
+        <button class="tab" data-cat="IoT" onclick="setCategory(this)">📡 IoT</button>
+        <button class="tab" data-cat="Robotics" onclick="setCategory(this)">🤖 Robotics</button>
+        <button class="tab" data-cat="Hardware" onclick="setCategory(this)">🔧 Hardware</button>
+        <button class="tab" data-cat="VLSI" onclick="setCategory(this)">💾 VLSI</button>
+        <button class="tab" data-cat="Telecom" onclick="setCategory(this)">📶 Telecom</button>
+        <button class="tab" data-cat="Defence" onclick="setCategory(this)">🛡️ Defence</button>
+      </div>
+    </div>
+
+    <!-- Right-side controls -->
+    <div class="filter-controls">
+      <select class="select-input" id="locationFilter" onchange="applyFilters()">
+        <option value="">📍 All Locations</option>
+        <option value="Bangalore">Bangalore</option>
+        <option value="Hyderabad">Hyderabad</option>
+        <option value="Remote">Remote</option>
+        <option value="Mumbai">Mumbai</option>
+        <option value="Pune">Pune</option>
+        <option value="Chennai">Chennai</option>
+        <option value="Delhi">Delhi</option>
+      </select>
+
+      <select class="select-input" id="sourceFilter" onchange="applyFilters()">
+        <option value="">🌐 All Sources</option>
+        <option value="Adzuna">Adzuna</option>
+        <option value="Remotive">Remotive (Remote)</option>
+      </select>
+
+      <select class="select-input" id="sortFilter" onchange="applyFilters()">
+        <option value="match_score">⭐ Best Match</option>
+        <option value="posted_at">🕐 Newest First</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<main class="main-content">
+
+  <!-- Search bar -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input
+        type="text"
+        id="searchInput"
+        class="search-input"
+        placeholder="Search roles, companies, skills…"
+        oninput="applyFilters()"
+      />
+    </div>
+    <div class="results-count" id="resultsCount">Loading jobs…</div>
+  </div>
+
+  <!-- Job grid -->
+  <div class="jobs-grid" id="jobsGrid">
+    <!-- Skeleton loaders -->
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon">🔍</div>
+    <h3>No jobs found</h3>
+    <p>Try adjusting your filters or wait for the next refresh</p>
+    <button class="refresh-btn" onclick="manualRefresh()">Refresh Now</button>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-state" id="errorState" style="display:none">
+    <div class="empty-icon">⚠️</div>
+    <h3>Couldn't load jobs</h3>
+    <p id="errorMsg">Check your API keys in the .env file and restart</p>
+    <button class="refresh-btn" onclick="loadJobs()">Try Again</button>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════ TOAST ═══════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════ JOB DETAIL MODAL ═══════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal" id="jobModal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
